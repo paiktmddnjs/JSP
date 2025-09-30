@@ -95,7 +95,7 @@ public class PizzaOrderServlet extends HttpServlet {
 		request.setAttribute("price", price);
 		
 		//요청처리 후 사용자가 보게될 응답페이지를 만들어서 전달.
-		request.getRequestDispatcher("views/pizza/pizzaPayment.jsp").forward(request, response);;
+		request.getRequestDispatcher("views/pizza/pizzaPayment.jsp").forward(request, response);
 	}
 
 	/**
