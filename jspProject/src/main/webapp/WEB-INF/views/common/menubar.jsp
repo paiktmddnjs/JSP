@@ -10,7 +10,7 @@
 
     <!-- google web font notosans-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
     
     <!-- 부트스트랩 5.3.3-->
@@ -40,48 +40,14 @@
 
         h1{ padding: 24px 0;}
 
-        .login-area{
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
+        .navbar-nav .nav-link {
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        .login-area input[type="button"],
-        .login-area input[type="submit"]{
-            width: 50%;
-            float: left;
-        }
-
-        .logout-area > div{
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 12px 0;
-            gap: 12px;
-        }
-
-        .main-nav{background: black;}
-
-        .main-nav ul{
-            display: flex;
-            flex-direction: row;
-        }
-
-        .main-nav ul li{
-            width: 150px;
-            height: 50px;
-        }
-
-        .main-nav ul li a{
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            width: 100%;
-            height: 100%;
-            line-height: 50px;
-            text-align: center;
-            display: inline-block;
+        .navbar-nav .nav-link:hover {
+            color: #ffc107 !important;
         }
     </style>
 </head>
@@ -93,29 +59,28 @@
 		<c:remove var="alertMsg"/>
 	</c:if>
 
-    <h1 align="center">Welcome KH World</h1>
-    <div class="login-area">
-    <c:choose>
-    	<c:when test="${empty sessionScope.loginMember}">
-	        <!--로그인 전-->
-	        <form action="${pageContext.request.contextPath}/login.me" method="post">
-	            <table>
-	                <tr>
-	                    <th>아이디</th>
-	                    <td><input type="text" name="userId" required></td>
-	                </tr>
-	                <tr>
-	                    <th>비밀번호</th>
-	                    <td><input type="password" name="userPwd" required></td>
-	                </tr>
-	                <tr>
-	                    <td colspan="2">
-	                       <input type="submit" value="로그인">
-	                       <input type="button" value="회원가입" onclick="enrollPage();"> 
-	                    </td>
-	                </tr>
-	            </table>
-	        </form>
+    <div class="container-fluid">
+        <h1 class="text-center py-4 mb-4 border-bottom">Welcome KH World</h1>
+
+        <div class="d-flex justify-content-end mb-4">
+
+        <c:choose>
+        	<c:when test="${empty sessionScope.loginMember}">
+	            <!--로그인 전-->
+	            <form action="${pageContext.request.contextPath}/login.me" method="post" class="d-flex gap-2 align-items-end">
+	                <div class="form-group">
+	                    <label for="userId" class="form-label small">아이디</label>
+	                    <input type="text" name="userId" id="userId" class="form-control form-control-sm" required style="width: 120px;">
+	                </div>
+	                <div class="form-group">
+	                    <label for="userPwd" class="form-label small">비밀번호</label>
+	                    <input type="password" name="userPwd" id="userPwd" class="form-control form-control-sm" required style="width: 120px;">
+	                </div>
+	                <div class="d-flex flex-column gap-1">
+	                    <button type="submit" class="btn btn-primary btn-sm">로그인</button>
+	                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="enrollPage();">회원가입</button>
+	                </div>
+	            </form>
 	        <script>
 	        console.log("${request.contextPath}")
 	        	function enrollPage(){
@@ -129,25 +94,30 @@
 	        </script>
         </c:when>
         <c:otherwise>
-	        <!--로그인 후-->
-	        <div class="logout-area">
-	            <b>${loginMember.memberName}님</b>의 방문을 환영합니다. <br>
-	            <div>
-	                <a href="">마이페이지</a>
-	                <a href="">로그아웃</a>
+	            <!--로그인 후-->
+	            <div class="d-flex flex-column align-items-end">
+	                <div class="mb-2">
+	                    <span class="fw-bold text-primary">${loginMember.memberName}님</span>의 방문을 환영합니다.
+	                </div>
+	                <div class="d-flex gap-2">
+	                    <a href="${pageContext.request.contextPath}/myPage.me" class="btn btn-outline-primary btn-sm">마이페이지</a>
+	                    <a href="${pageContext.request.contextPath}/logout.me" class="btn btn-outline-danger btn-sm">로그아웃</a>
+	                </div>
 	            </div>
-	        </div> 
         </c:otherwise>
-    </c:choose>
+        </c:choose>
+        </div>
     </div>
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="">HOME</a></li>
-            <li><a href="">공지사항</a></li>
-            <li><a href="">일반게시판</a></li>
-            <li><a href="">사진게시판</a></li>
-        </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link px-4" href="">HOME</a></li>
+                <li class="nav-item"><a class="nav-link px-4" href="">공지사항</a></li>
+                <li class="nav-item"><a class="nav-link px-4" href="${pageContext.request.contextPath}/list.bo">일반게시판</a></li>
+                <li class="nav-item"><a class="nav-link px-4" href="">사진게시판</a></li>
+            </ul>
+        </div>
     </nav>
 </body>
 </html>

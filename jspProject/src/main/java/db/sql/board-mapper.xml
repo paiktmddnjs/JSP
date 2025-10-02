@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="selectBoard">
+       
+        SELECT
+            BOARD_NO,
+            CATEGORY_NO,
+            BOARD_TITLE,
+            BOARD_WRITER,
+            COUNT,
+            CREATE_DATE
+        FROM
+            BOARD
+       
+    </entry>
+</properties>

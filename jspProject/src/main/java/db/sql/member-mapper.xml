@@ -24,6 +24,8 @@
 			?
 		)
 	</entry>
+	
+	
 	<entry key="loginMember">
 		SELECT MEMBER_NO,
 				MEMBER_ID,
@@ -40,5 +42,49 @@
 	   WHERE MEMBER_ID = ?
 	     AND MEMBER_PWD = ?
 	     AND STATUS = 'Y'
+	</entry>
+	
+	
+	<entry key="updateMember">
+	  UPDATE MEMBER
+		   SET  PHONE = ?,
+				EMAIL = ?,
+				ADDRESS = ?,
+				INTEREST = ?,
+				MODIFY_DATE = SYSDATE
+		WHERE MEMBER_ID = ?
+	</entry>
+	
+	<entry key="selectMemberByUserId">
+		SELECT MEMBER_NO,
+				MEMBER_ID,
+				MEMBER_PWD,
+				MEMBER_NAME,
+				PHONE,
+				EMAIL,
+				ADDRESS,
+				INTEREST,
+				ENROLL_DATE,
+				MODIFY_DATE,
+				STATUS
+		FROM MEMBER
+	   WHERE MEMBER_ID = ?
+	     AND MEMBER_PWD = ?
+	     AND STATUS = 'Y'
+	</entry>
+	
+	<entry key="updatePwdMember">
+	  UPDATE MEMBER
+		   SET 
+				MEMBER_PWD,
+				MODIFY_DATE = SYSDATE
+		WHERE MEMBER_ID = ?
+	</entry>
+	
+	<entry key="deleteMember">
+		UPDATE MEMBER
+		   SET STATUS = 'N',
+			   MODIFY_DATE = SYSDATE
+		 WHERE MEMBER_ID = ?
 	</entry>
 </properties>
