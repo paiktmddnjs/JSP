@@ -17,5 +17,6 @@
 	 --%>
 	 
 	<jsp:include page="/WEB-INF/views/common/menubar.jsp" />
+ 	<!-- 해당 경로를 jsp페이지에 포하시킨다. -->
 </body>
 </html>

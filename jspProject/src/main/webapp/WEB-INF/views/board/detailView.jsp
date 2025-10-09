@@ -119,7 +119,8 @@
 }
 </style>
 </head>
-<body onload="init(${board.boardNo})">
+<body onload="init(${board.boardNo})"> <!-- 서버측에서 boarNo을 받아와서 해당 번호의 상세페이지를 보여준다. -->
+
 	<jsp:include page="/WEB-INF/views/common/menubar.jsp" />
 
 	<div class="board-container">
@@ -174,7 +175,7 @@
 				<thead>
 					<tr>
 						<th width="120">댓글작성</th>
-						<form action="${pageContext.request.contextPath}/insert.re" method="post" style="display: inline;">
+						<form action="${pageContext.request.contextPath}/insert.re" method="post">
 							<input type="hidden" name="boardNo" value="${board.boardNo}">
 							<td><textarea id="reply-content" name="replyContent"
 									cols="50" rows="3"></textarea></td>

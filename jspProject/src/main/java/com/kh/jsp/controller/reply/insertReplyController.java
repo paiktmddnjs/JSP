@@ -15,9 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-/**
- * Servlet implementation class InsertController
- */
+
+
 @WebServlet("/insert.re")
 public class insertReplyController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -36,6 +35,13 @@ public class insertReplyController extends HttpServlet {
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
+
+		if (session.getAttribute("loginMember") == null) {
+			session.setAttribute("alertMsg", "로그인을 먼저 하십시요!.");
+			response.sendRedirect(request.getContextPath());
+			return;
+		}
+
 		Member loginMember = (Member) session.getAttribute("loginMember");
 
 		String boardNoStr = request.getParameter("boardNo");
@@ -68,8 +74,6 @@ public class insertReplyController extends HttpServlet {
 
 		int currentBoardNo = currentBoard.getBoardNo();
 		int replyWriter = loginMember.getMemberNo();
-
-		// String[] -> string
 
 		Reply r = Reply.insertCreateReply(replyContent, currentBoardNo, replyWriter);
 

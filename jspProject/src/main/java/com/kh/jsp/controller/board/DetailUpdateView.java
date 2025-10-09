@@ -28,6 +28,7 @@ public class DetailUpdateView extends HttpServlet {
     
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		HttpSession session = request.getSession();
 		
 		if(session.getAttribute("loginMember") == null) {
@@ -38,10 +39,6 @@ public class DetailUpdateView extends HttpServlet {
 		
 		  // 게시글 번호 받아오기
 	    String boardNoStr = request.getParameter("boardNo");
-	    if (boardNoStr == null || boardNoStr.trim().isEmpty()) {
-	        // 적절한 에러 처리
-	        throw new ServletException("게시글 번호가 전달되지 않았습니다.");
-	    }
 	    int boardNo = Integer.parseInt(boardNoStr);
 
 	    // 게시글 조회하는 서비스 호출 (예시)

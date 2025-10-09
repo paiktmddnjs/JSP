@@ -27,6 +27,7 @@ public class EnrollFromController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher("/WEB-INF/views/member/enrollForm.jsp").forward(request, response);
+		// 요청에 대해 특정 경로의 지원을 전달한다.
 	}
 
 	/**

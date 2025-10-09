@@ -67,6 +67,7 @@
         <c:choose>
         	<c:when test="${empty sessionScope.loginMember}">
 	            <!--로그인 전-->
+	             <!-- 현재 웹 애플리케이션의 컨텍스트 경로를 포함하여, 해당 URL에 요청한다. -->
 	            <form action="${pageContext.request.contextPath}/login.me" method="post" class="d-flex gap-2 align-items-end">
 	                <div class="form-group">
 	                    <label for="userId" class="form-label small">아이디</label>

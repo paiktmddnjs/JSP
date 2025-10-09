@@ -92,10 +92,10 @@ public class BoardService {
 		
 	}
 	
-	public boolean deleteBoard(int BoardNo) {
+	public boolean deleteBoard(int boardNo) {
 	Connection conn = getConnection();
 		
-		boolean result = new BoardDao().deleteBoard(BoardNo, conn);
+		boolean result = new BoardDao().deleteBoard(boardNo, conn);
 		
 		if(result) {
 			commit(conn);

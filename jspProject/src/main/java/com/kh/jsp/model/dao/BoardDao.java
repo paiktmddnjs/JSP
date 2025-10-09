@@ -37,15 +37,15 @@ public class BoardDao {
 	public List<Board> selectBoard(Connection conn) {
 
 		List<Board> boardList = new ArrayList<>();
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
+		PreparedStatement pstmt = null; // SQL 실행을 위한 객체
+		ResultSet rset = null; // SQL결과 저장 객체
 		String sql = prop.getProperty("selectBoard");
 
 		try {
-			pstmt = conn.prepareStatement(sql);
-			rset = pstmt.executeQuery();
+			pstmt = conn.prepareStatement(sql); //SQL문을 컴파일하고 실행 준비 상태를 저장
+			rset = pstmt.executeQuery(); // SQL을 실행하고 그 결과를 저장
 
-			while (rset.next()) {
+			while (rset.next()) {// rset을 순회해서 더 이상 행이 없으면 fasle를 반환하여 반복문이 종료된다.
 				Board board = Board.selectCreateBoard(rset.getInt("BOARD_NO"), rset.getInt("CATEGORY_NO"),
 						rset.getString("BOARD_TITLE"), rset.getString("MEMBER_NAME"), rset.getInt("COUNT"),
 						rset.getDate("CREATE_DATE"));

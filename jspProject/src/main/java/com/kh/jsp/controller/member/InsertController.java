@@ -38,14 +38,14 @@ public class InsertController extends HttpServlet {
 		String userId = request.getParameter("userId");
 		String userPwd = request.getParameter("userPwd");
 		String userName = request.getParameter("userName");
-		String phone = request.getParameter("phone"); // "010~" || ""
-		String email = request.getParameter("email"); // "~~" || ""
-		String address = request.getParameter("address"); // "~~" || ""
-		String[] interestArr = request.getParameterValues("interest"); // ["sports...] || null
+		String phone = request.getParameter("phone"); 
+		String email = request.getParameter("email"); 
+		String address = request.getParameter("address"); 
+		String[] interestArr = request.getParameterValues("interest"); 
 
 		// String[] -> string
 		String interest = "";
-		if (interestArr != null) {
+		if (interestArr != null) { //널이 아니면 각값에 대해 ,를 붙여준다.
 			interest = String.join(",", interestArr);
 		}
 
@@ -56,7 +56,7 @@ public class InsertController extends HttpServlet {
 		if (result > 0) {
 
 			request.getSession().setAttribute("alertMsg", "성공적으로 회원가입을 완료하였습니다.");
-			response.sendRedirect(request.getContextPath());
+			response.sendRedirect(request.getContextPath()); //현재 URL로 다시 이동한다.
 		} else {
 			request.setAttribute("errorMsg", "회원가입에 실패하였습니다.");
 			request.getRequestDispatcher("/WEB-INF/views/common/error.jsp");
@@ -65,10 +65,7 @@ public class InsertController extends HttpServlet {
 
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub

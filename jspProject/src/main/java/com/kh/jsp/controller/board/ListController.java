@@ -37,12 +37,6 @@ public class ListController extends HttpServlet {
 		// 게시판 목록을 request에 저장
 		request.setAttribute("boardList", boardList);
 
-		// 세션에 로그인한 회원 정보 가져오기
-		HttpSession session = request.getSession();
-		Member loginMember = (Member) session.getAttribute("loginMember");
-
-		// 로그인 회원 정보도 request에 저장 (필요시)
-		
 
 		// 포워딩
 		request.getRequestDispatcher("/WEB-INF/views/board/listView.jsp").forward(request, response);

@@ -122,9 +122,7 @@
 											<c:when test="${board.categoryNo == 60}">요리</c:when>
 											<c:when test="${board.categoryNo == 70}">기타</c:when>	
 										</c:choose></td>
-									<td><a
-										href="${pageContext.request.contextPath}/detail.bo?boardNo=${board.boardNo}">${board.boardTitle}</a>
-									</td>
+									<td>${board.boardTitle}</td>
 									<td>${board.memberName}</td>
 									<td>${board.count}</td>
 									<td>${board.createDate}</td>

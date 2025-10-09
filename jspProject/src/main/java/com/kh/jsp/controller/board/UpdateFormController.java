@@ -43,6 +43,7 @@ public class UpdateFormController extends HttpServlet {
 		
 		HttpSession session = request.getSession();
 		Member loginMember = (Member) session.getAttribute("loginMember");
+		
 		if (loginMember == null) {
 		    // 세션에 회원 정보 없음
 			request.setAttribute("errorMsg", "로그인을 먼저 하세요!");
