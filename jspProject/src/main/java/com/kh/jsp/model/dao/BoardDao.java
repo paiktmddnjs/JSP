@@ -2,8 +2,8 @@ package com.kh.jsp.model.dao;
 
 import static com.kh.jsp.common.JDBCTemplate.close;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,48 +21,175 @@ public class BoardDao {
 
 	public BoardDao() {
 		super();
-		
+
 		String path = JDBCTemplate.class.getResource("/db/sql/board-mapper.xml").getPath();
-		
-		
-		try {
-			prop.loadFromXML(new FileInputStream(path));
+
+		try (InputStream is = JDBCTemplate.class.getResourceAsStream("/db/sql/board-mapper.xml")) {
+			if (is == null) {
+				throw new IOException("Resource not found");
+			}
+			prop.loadFromXML(is);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public List<Board> selectBoard(Connection conn) {
-		
-	    List<Board> boardList = new ArrayList<>();
-	    PreparedStatement pstmt = null;
-	    ResultSet rset = null;
-	    String sql = prop.getProperty("selectBoard");
 
-	    try {
-	        pstmt = conn.prepareStatement(sql);
-	        rset = pstmt.executeQuery();
+		List<Board> boardList = new ArrayList<>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("selectBoard");
 
-	        while (rset.next()) {
-	            Board board = Board.selectCreateBoard(
-	                rset.getInt("boardNo"),
-	                rset.getInt("categoryNo"),
-	                rset.getString("boardTitle"),
-	                rset.getInt("boardWriter"),
-	                rset.getInt("count"),
-	                rset.getDate("createDate")
-	            );
-	            // 리스트에 추가하는 등 후속 처리
-	            boardList.add(board);
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        close(rset);
-	        close(pstmt);
-	    }
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
 
-	    return boardList;
+			while (rset.next()) {
+				Board board = Board.selectCreateBoard(rset.getInt("BOARD_NO"), rset.getInt("CATEGORY_NO"),
+						rset.getString("BOARD_TITLE"), rset.getString("MEMBER_NAME"), rset.getInt("COUNT"),
+						rset.getDate("CREATE_DATE"));
+				// 리스트에 추가하는 등 후속 처리
+				boardList.add(board);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+
+		return boardList;
 	}
 
+	public int insertBoard(Board b, Connection conn) {
+		// insert -> 처리된 행 수 -> 반환
+
+		int result = 0;
+
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("insertBoard");
+
+		try {
+			// 테이블르 컬럼에 맞게 적절히 매핑하는 것이다.
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, b.getCategoryNo()); // 카테고리 번호
+			pstmt.setString(2, b.getBoardTitle()); // 제목
+			pstmt.setString(3, b.getBoardContent()); // 내용
+			pstmt.setInt(4, b.getBoardWriter()); // 로그인 회원 번호(memberNo))
+
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+
+		return result;
+	}
+
+	public Board selectDetailBoard(int boardNo, Connection conn) {
+
+		Board board = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String sql = prop.getProperty("selectBoardByNo");
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, boardNo);
+
+			rset = pstmt.executeQuery();
+
+			if (rset.next()) {
+				board = Board.selectCreateDetailBoard(rset.getInt("BOARD_NO"), rset.getInt("CATEGORY_NO"),
+						rset.getString("BOARD_TITLE"), rset.getInt("BOARD_WRITER"), rset.getString("MEMBER_NAME"), rset.getInt("COUNT"),
+						rset.getDate("CREATE_DATE"));
+				// boardContent 컬럼도 필요하면 추가하세요
+				board.setBoardContent(rset.getString("BOARD_CONTENT"));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+
+		return board;
+	}
+
+	public boolean incrementViewCount(int boardNo, Connection conn) {
+
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("incrementViewCount");
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, boardNo);
+			
+			int result = pstmt.executeUpdate();
+			return result > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			close(pstmt);
+		}
+	}
+
+	public int updateBoard(Board b, Connection conn) {
+
+		int result = 0;
+
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("updateBoard");
+
+		try {
+
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, b.getCategoryNo());
+			pstmt.setString(2, b.getBoardTitle());
+			pstmt.setString(3, b.getBoardContent());
+			pstmt.setInt(4,  b.getBoardNo());
+		
+
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+
+		return result;
+	}
+
+	
+	public boolean deleteBoard(int BoardNo, Connection conn) {
+		
+		int result = 0;	
+		PreparedStatement pstmt = null;
+		
+		String sql = prop.getProperty("deleteBoard");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, BoardNo);
+			
+			result = pstmt.executeUpdate();
+			return result > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return false;
+		
+	}
 }

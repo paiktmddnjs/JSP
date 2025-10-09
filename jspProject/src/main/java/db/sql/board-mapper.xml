@@ -1,17 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <entry key="selectBoard">
-       
-        SELECT
-            BOARD_NO,
-            CATEGORY_NO,
-            BOARD_TITLE,
-            BOARD_WRITER,
-            COUNT,
-            CREATE_DATE
-        FROM
-            BOARD
-       
-    </entry>
+	<entry key="selectBoard">
+
+		SELECT
+   			B.BOARD_NO,
+   			B.CATEGORY_NO,
+    		B.BOARD_TITLE,
+    		B.BOARD_WRITER,
+   			M.MEMBER_NAME,
+    		B.COUNT,
+    		B.CREATE_DATE
+		FROM
+    		BOARD B
+		JOIN
+    		MEMBER M ON B.BOARD_WRITER = M.MEMBER_NO
+		WHERE
+    		B.STATUS = 'Y'
+
+	</entry>
+
+
+	<entry key="insertBoard">
+
+		INSERT INTO BOARD (
+		BOARD_NO,
+		BOARD_TYPE,
+		CATEGORY_NO,
+		BOARD_TITLE,
+		BOARD_CONTENT,
+		BOARD_WRITER
+		)
+		VALUES(
+		SEQ_BNO.NEXTVAL,
+		1,
+		?,
+		?,
+		?,
+		?
+		)
+
+	</entry>
+
+
+	<entry key="selectBoardByNo">
+
+		SELECT
+ 		    B.BOARD_NO,
+   		 	B.CATEGORY_NO,
+   		 	B.BOARD_TITLE,
+    		B.BOARD_CONTENT,
+   		 	B.BOARD_WRITER,
+    		M.MEMBER_NAME,     
+   		 	B.COUNT,
+    		B.CREATE_DATE
+		FROM
+    		BOARD B
+		JOIN
+    		MEMBER M ON B.BOARD_WRITER = M.MEMBER_NO
+		WHERE
+    		B.BOARD_NO = ?
+	</entry>
+
+
+
+	<entry key="incrementViewCount">
+
+		UPDATE
+		board
+		SET
+		count = count + 1
+		WHERE
+		board_no = ?
+
+	</entry>
+
+
+	<entry key="updateBoard">
+
+		UPDATE
+		board
+		SET
+		CATEGORY_NO = ?,
+		BOARD_TITLE = ?,
+		BOARD_CONTENT = ?
+		WHERE
+		BOARD_NO = ?
+
+	</entry>
+
+
+	<entry key="deleteBoard">
+
+		UPDATE
+		board
+		SET
+		STATUS = 'N'
+		WHERE
+		BOARD_NO = ?
+
+	</entry>
 </properties>

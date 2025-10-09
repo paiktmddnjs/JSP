@@ -87,7 +87,8 @@
 			<h2>일반게시판</h2>
 
 			<div class="write-btn-area">
-				<a class="btn btn-primary" href="">글쓰기</a>
+				<a class="btn btn-primary"
+					href="${pageContext.request.contextPath}/enrollFrom.bo">글쓰기</a>
 			</div>
 
 			<table class="board-table">
@@ -110,13 +111,23 @@
 						</c:when>
 						<c:otherwise>
 							<c:forEach var="board" items="${boardList}">
-								<tr>
+								<tr class="clickable" data-boardno="${board.boardNo}">
 									<td>${board.boardNo}</td>
-									<td>${board.categoryNo}</td>
-									<td>${board.boardTitle}</td>
-									<td>${board.boardWriter}</td>
+									<td><c:choose>
+											<c:when test="${board.categoryNo == 10}">공통</c:when>
+											<c:when test="${board.categoryNo == 20}">운동</c:when>
+											<c:when test="${board.categoryNo == 30}">등산</c:when>
+											<c:when test="${board.categoryNo == 40}">게임</c:when>
+											<c:when test="${board.categoryNo == 50}">낚시</c:when>
+											<c:when test="${board.categoryNo == 60}">요리</c:when>
+											<c:when test="${board.categoryNo == 70}">기타</c:when>	
+										</c:choose></td>
+									<td><a
+										href="${pageContext.request.contextPath}/detail.bo?boardNo=${board.boardNo}">${board.boardTitle}</a>
+									</td>
+									<td>${board.memberName}</td>
 									<td>${board.count}</td>
-									<td>${createDate}</td>
+									<td>${board.createDate}</td>
 								</tr>
 							</c:forEach>
 						</c:otherwise>
@@ -136,4 +147,20 @@
 		</div>
 	</div>
 </body>
+<script>
+	document
+			.querySelectorAll('.clickable')
+			.forEach(
+					function(tr) {
+						tr
+								.addEventListener(
+										'click',
+										function() {
+											var boardNo = this
+													.getAttribute('data-boardno');
+											window.location.href = '${pageContext.request.contextPath}/detail.bo?boardNo='
+													+ boardNo;
+										});
+					});
+</script>
 </html>

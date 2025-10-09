@@ -14,7 +14,7 @@
 			INTEREST
 		)
 		VALUES(
-			SEQ_MNO.NEXTVAL, 
+			SEQ_UNO.NEXTVAL, 
 			?, 
 			?, 
 			?, 
@@ -45,17 +45,7 @@
 	</entry>
 	
 	
-	<entry key="updateMember">
-	  UPDATE MEMBER
-		   SET  PHONE = ?,
-				EMAIL = ?,
-				ADDRESS = ?,
-				INTEREST = ?,
-				MODIFY_DATE = SYSDATE
-		WHERE MEMBER_ID = ?
-	</entry>
-	
-	<entry key="selectMemberByUserId">
+	<entry key="selectMemberByMemberId">
 		SELECT MEMBER_NO,
 				MEMBER_ID,
 				MEMBER_PWD,
@@ -69,18 +59,24 @@
 				STATUS
 		FROM MEMBER
 	   WHERE MEMBER_ID = ?
-	     AND MEMBER_PWD = ?
 	     AND STATUS = 'Y'
 	</entry>
 	
-	<entry key="updatePwdMember">
-	  UPDATE MEMBER
-		   SET 
-				MEMBER_PWD,
-				MODIFY_DATE = SYSDATE
-		WHERE MEMBER_ID = ?
+	
+	<entry key="updateMember">
+	 UPDATE MEMBER SET PHONE = ?, EMAIL = ?, ADDRESS = ?, INTEREST = ?, MODIFY_DATE = SYSDATE WHERE MEMBER_ID = ?
 	</entry>
 	
+	
+	<entry key="updateMemberPwd">
+		UPDATE MEMBER
+		   SET MEMBER_PWD = ?,
+			   MODIFY_DATE = SYSDATE
+		 WHERE MEMBER_ID = ?
+		 
+	</entry>
+
+
 	<entry key="deleteMember">
 		UPDATE MEMBER
 		   SET STATUS = 'N',

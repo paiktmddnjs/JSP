@@ -34,9 +34,9 @@ public class MemberService {
 
 	public Member updateMember(Member m) {
 		Connection conn = getConnection();
-		Member updateMember = null;
-
 		int result = new MemberDao().updateMember(m, conn);
+		
+		Member updateMember = null;
 		if (result > 0) {
 			commit(conn);
 			updateMember = new MemberDao().selectMemberByUserId(m.getMemberId(), conn);
@@ -51,7 +51,8 @@ public class MemberService {
 	public Member updatePwdMember(String memberId, String updatePwd) {
 
 		Connection conn = getConnection();
-		int result = new MemberDao().updatePwdMember(memberId, updatePwd, conn);
+		int result = new MemberDao().updateMemberPwd(memberId, updatePwd, conn);
+	
 		Member updateMember = null;
 
 		if (result > 0) {

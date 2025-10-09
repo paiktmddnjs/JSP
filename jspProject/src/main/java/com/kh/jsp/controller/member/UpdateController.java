@@ -52,7 +52,7 @@ public class UpdateController extends HttpServlet {
 		
 		if(updateMember == null) {
 			request.setAttribute("errorMsg" , "회원정보 수정에 실패하였습니다.");
-			request.getRequestDispatcher("/WEB-INFview/common/error.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/views/common/error.jsp").forward(request, response);
 		}else { 
 			HttpSession session = request.getSession();
 			session.setAttribute("loginMember", updateMember);
