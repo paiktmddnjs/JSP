@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="insertFile">
+		INSERT INTO ATTACHMENT
+		(
+			FILE_NO,
+			REF_BNO,
+			ORIGIN_NAME,
+			CHANGE_NAME,
+			FILE_PATH,
+			UPLOAD_DATE,
+			FILE_LEVEL,
+			STATUS
+		
+		)
+		VALUES(
+			SEQ_FNO.NEXTVAL, 
+			?, 
+			?, 
+			'수정없음', 
+			?,
+			SYSDATE, 
+			1,
+		    'Y'
+			
+		)
+	</entry>
+	
+	<entry key="selectFileByNo">
+	
+	SELECT
+   	 	B.BOARD_NO,
+    	A.FILE_NO,
+    	A.ORIGIN_NAME,
+    	A.CHANGE_NAME,
+    	A.FILE_PATH,
+    	A.UPLOAD_DATE,
+    	A.FILE_LEVEL,
+    	A.STATUS
+	FROM
+    	BOARD B
+	JOIN
+    	ATTACHMENT A ON B.BOARD_NO = A.REF_BNO
+	WHERE
+    	B.BOARD_NO = ?
+
+	</entry>
+	 
+
+</properties>

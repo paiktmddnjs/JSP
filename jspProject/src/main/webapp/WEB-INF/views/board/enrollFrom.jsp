@@ -74,6 +74,11 @@
 }
 </style>
 </head>
+<c:if test="${not empty alertMsg}">
+    <script>
+        alert("${alertMsg}");
+    </script>
+</c:if>
 <body>
 	<jsp:include page="/WEB-INF/views/common/menubar.jsp" />
 

@@ -63,27 +63,39 @@ public class BoardDao {
 	}
 
 	public int insertBoard(Board b, Connection conn) {
-		// insert -> 처리된 행 수 -> 반환
-
 		int result = 0;
-
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		String sql = prop.getProperty("insertBoard");
+		String boardNoSql = prop.getProperty("getBoardNo"); // 이 쿼리가 "SELECT SEQ_BNO.CURRVAL FROM DUAL" 인지 확인하세요.
 
 		try {
-			// 테이블르 컬럼에 맞게 적절히 매핑하는 것이다.
+			// 게시글 INSERT
 			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setInt(1, b.getCategoryNo()); // 카테고리 번호
-			pstmt.setString(2, b.getBoardTitle()); // 제목
-			pstmt.setString(3, b.getBoardContent()); // 내용
-			pstmt.setInt(4, b.getBoardWriter()); // 로그인 회원 번호(memberNo))
+			pstmt.setInt(1, b.getCategoryNo());
+			pstmt.setString(2, b.getBoardTitle());
+			pstmt.setString(3, b.getBoardContent());
+			pstmt.setInt(4, b.getBoardWriter());
 
 			result = pstmt.executeUpdate();
+
+			if (result > 0) {
+				// 시퀀스 번호 조회
+				try (PreparedStatement seqStmt = conn.prepareStatement(boardNoSql);
+						ResultSet rsSeq = seqStmt.executeQuery()) {
+
+					if (rsSeq.next()) { // rs.next() 필수
+						int generatedBoardNo = rsSeq.getInt(1);
+						b.setBoardNo(generatedBoardNo);
+					}
+				}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			close(pstmt);
+			close(rs);
+			// 필요하다면 rs도 close() 해주세요
 		}
 
 		return result;
@@ -106,8 +118,8 @@ public class BoardDao {
 
 			if (rset.next()) {
 				board = Board.selectCreateDetailBoard(rset.getInt("BOARD_NO"), rset.getInt("CATEGORY_NO"),
-						rset.getString("BOARD_TITLE"), rset.getInt("BOARD_WRITER"), rset.getString("MEMBER_NAME"), rset.getInt("COUNT"),
-						rset.getDate("CREATE_DATE"));
+						rset.getString("BOARD_TITLE"), rset.getInt("BOARD_WRITER"), rset.getString("MEMBER_NAME"),
+						rset.getInt("COUNT"), rset.getDate("CREATE_DATE"));
 				// boardContent 컬럼도 필요하면 추가하세요
 				board.setBoardContent(rset.getString("BOARD_CONTENT"));
 			}
@@ -131,7 +143,7 @@ public class BoardDao {
 			pstmt = conn.prepareStatement(sql);
 
 			pstmt.setInt(1, boardNo);
-			
+
 			int result = pstmt.executeUpdate();
 			return result > 0;
 		} catch (SQLException e) {
@@ -152,12 +164,11 @@ public class BoardDao {
 		try {
 
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setInt(1, b.getCategoryNo());
 			pstmt.setString(2, b.getBoardTitle());
 			pstmt.setString(3, b.getBoardContent());
-			pstmt.setInt(4,  b.getBoardNo());
-		
+			pstmt.setInt(4, b.getBoardNo());
 
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -169,18 +180,17 @@ public class BoardDao {
 		return result;
 	}
 
-	
 	public boolean deleteBoard(int BoardNo, Connection conn) {
-		
-		int result = 0;	
+
+		int result = 0;
 		PreparedStatement pstmt = null;
-		
+
 		String sql = prop.getProperty("deleteBoard");
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, BoardNo);
-			
+
 			result = pstmt.executeUpdate();
 			return result > 0;
 		} catch (SQLException e) {
@@ -188,8 +198,8 @@ public class BoardDao {
 		} finally {
 			close(pstmt);
 		}
-		
+
 		return false;
-		
+
 	}
 }
