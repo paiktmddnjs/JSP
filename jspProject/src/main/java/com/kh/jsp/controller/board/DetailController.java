@@ -11,29 +11,30 @@ import java.io.IOException;
 import java.util.List;
 
 import com.kh.jsp.model.vo.Board;
+import com.kh.jsp.model.vo.FileUpload;
 import com.kh.jsp.model.vo.Member;
 import com.kh.jsp.model.vo.Reply;
 import com.kh.jsp.service.BoardService;
+import com.kh.jsp.service.FileService;
 import com.kh.jsp.service.ReplyService;
 
-/**
- * Servlet implementation class EnrollFromController
- */
+
+
+
 @WebServlet("/detail.bo")
 public class DetailController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+    
+	
     public DetailController() {
         super();
-        // TODO Auto-generated constructor stub
+       
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
+    
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	   
 			String boardNoStr = request.getParameter("boardNo");
@@ -51,13 +52,26 @@ public class DetailController extends HttpServlet {
 	            // 게시물 데이터를 request에 담아서 전달
 	            request.setAttribute("board", board);
 	            
+	            System.out.println("게시판 번호는 : " + boardNo);
+	            List<FileUpload> files = new FileService().getFilesByBoardNo(boardNo);
+	            
+	            System.out.println("첨부파일 개수: " + files.size());
+	            for (FileUpload f : files) {
+	                System.out.println("파일명: " + f.getFileOriginalName());
+	            }
 	            
 	            List<Reply> replyList = new ReplyService().getReplyList(boardNo);
 
 	    		// 게시판 목록을 request에 저장
+	    		request.setAttribute("files", files);
 	    		request.setAttribute("replyList", replyList);
 
+	    		// 세션에 로그인한 회원 정보 가져오기
+	    		HttpSession session = request.getSession();
+	    		Member loginMember = (Member) session.getAttribute("loginMember");
 	            
+	            
+
 	            // 상세페이지 포워딩
 	            request.getRequestDispatcher("/WEB-INF/views/board/detailView.jsp").forward(request, response);
 	        } else {
@@ -71,7 +85,7 @@ public class DetailController extends HttpServlet {
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		
 		doGet(request, response);
 	}
 

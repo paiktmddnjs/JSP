@@ -41,6 +41,15 @@
 		)
 
 	</entry>
+	
+	<entry key="getBoardNo">
+
+		SELECT 
+			SEQ_BNO.CURRVAL 
+		FROM 
+			DUAL
+
+	</entry>
 
 
 	<entry key="selectBoardByNo">

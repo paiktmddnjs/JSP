@@ -12,20 +12,19 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import com.kh.jsp.model.vo.Board;
+import com.kh.jsp.model.vo.FileUpload;
 import com.kh.jsp.model.vo.Member;
 import com.kh.jsp.service.BoardService;
-
+import com.kh.jsp.service.FileService;
 
 /**
  * Servlet implementation class ListController
  */
 
-@MultipartConfig(
-	    fileSizeThreshold = 1024 * 1024, // 1MB
-	    maxFileSize = 1024 * 1024 * 10, // 10MB
-	    maxRequestSize = 1024 * 1024 * 20 // 20MB
-	)
-
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, // 1MB
+		maxFileSize = 1024 * 1024 * 10, // 10MB
+		maxRequestSize = 1024 * 1024 * 20 // 20MB
+)
 
 @WebServlet("/insert.bo")
 public class InsertBoardController extends HttpServlet {
@@ -68,21 +67,6 @@ public class InsertBoardController extends HttpServlet {
 		String boardTitle = request.getParameter("title");
 		String boardContent = request.getParameter("content");
 
-		Part filePart = request.getPart("upfile");
-		String fileName = null;
-
-		if (filePart != null && filePart.getSize() > 0) {
-			fileName = getFileName(filePart);
-			String uploadPath = getServletContext().getRealPath("/upload");
-			File uploadDir = new File(uploadPath);
-			if (!uploadDir.exists())
-				uploadDir.mkdirs();
-
-			String filePath = uploadPath + File.separator + fileName;
-			filePart.write(filePath);
-			// 파일 이름이나 경로를 저장하는 로직 필요
-		}
-
 		// 로그인한 사용자 정보 가져오기 (세션에서 Member 객체 받아오기)
 		HttpSession session = request.getSession();
 		Member loginMember = (Member) session.getAttribute("loginMember");
@@ -103,7 +87,49 @@ public class InsertBoardController extends HttpServlet {
 		int result = new BoardService().insertBoard(b);
 
 		if (result > 0) {
-			// 성공 시 게시글 목록 또는 상세 페이지로 이동
+
+			int boardNo = b.getBoardNo();
+
+			Part filePart = request.getPart("upfile");
+			String fileName = null;
+			try {
+				if (filePart != null && filePart.getSize() > 0) {
+					fileName = getFileName(filePart);
+
+					if (fileName == null) {
+
+						System.out.println("파일이름이 널값입니다!");
+					}else {
+						System.out.println(fileName);
+					}
+
+					String uploadPath = getServletContext().getRealPath("/upload");
+					;
+					File uploadDir = new File(uploadPath);
+					if (!uploadDir.exists())
+						uploadDir.mkdirs();
+
+					String filePath = uploadPath + File.separator + fileName;
+					filePart.write(filePath);
+					// 파일 이름이나 경로를 저장하는 로직 필요
+					FileUpload f = FileUpload.insertFile(fileName, uploadPath);
+					f.setFileBoardNo(boardNo);
+
+					int fileResult = new FileService().insertFile(boardNo, f);
+
+					if (fileResult > 0) {
+						request.getSession().setAttribute("alertMsg", "파일첨부 성공!!");
+
+					} else
+						request.getSession().setAttribute("alertMsg", "파일첨부 실패 ㅠㅠ");
+
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				request.getSession().setAttribute("alertMsg", "파일 업로드에 실패했습니다. 다시 시도해주세요.");
+				request.getRequestDispatcher("/WEB-INF/views/board/enrollForm.jsp").forward(request, response);
+			}
+
 			request.getSession().setAttribute("alertMsg", "성공적으로 글쓰기를 완료하였습니다.");
 			response.sendRedirect(request.getContextPath() + "/list.bo");
 		} else {
@@ -116,9 +142,19 @@ public class InsertBoardController extends HttpServlet {
 
 	private String getFileName(Part part) {
 		String header = part.getHeader("content-disposition");
-		for (String cdPart : header.split(";")) {
-			if (cdPart.trim().startsWith("filename")) {
-				return cdPart.substring(cdPart.indexOf('=') + 1).trim().replace("\"", "");
+		if (header != null) {
+			// 헤더 내용을 분리
+			String[] elements = header.split(";");
+			for (String element : elements) {
+				element = element.trim();
+				if (element.startsWith("filename")) {
+					// filename="fileName" 형태이기 때문에 '='로 분리
+					String[] namePair = element.split("=", 2);
+					if (namePair.length == 2) {
+						String filename = namePair[1].trim().replace("\"", "");
+						return filename;
+					}
+				}
 			}
 		}
 		return null;

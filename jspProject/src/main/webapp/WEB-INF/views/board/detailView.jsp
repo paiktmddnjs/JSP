@@ -156,7 +156,19 @@
 				</tr>
 				<tr>
 					<th>첨부파일</th>
-					<td colspan="3">첨부파일이 없습니다.</td>
+					<td><c:choose>
+							<c:when test="${not empty files}">
+								<c:forEach var="file" items="${files}">
+									<a
+										href="${pageContext.request.contextPath}/upload/${file.fileOriginalName}"
+										target="_blank"> ${file.fileOriginalName}</a>
+									<br />
+								</c:forEach>
+							</c:when>
+							<c:otherwise>
+            첨부파일이 없습니다.
+        </c:otherwise>
+						</c:choose></td>
 				</tr>
 			</table>
 
@@ -175,7 +187,12 @@
 				<thead>
 					<tr>
 						<th width="120">댓글작성</th>
+<<<<<<< HEAD
 						<form action="${pageContext.request.contextPath}/insert.re" method="post">
+=======
+						<form action="${pageContext.request.contextPath}/insert.re"
+							method="post" style="display: inline;">
+>>>>>>> b2d295c5e22bcce19af462d10822554ab94f1070
 							<input type="hidden" name="boardNo" value="${board.boardNo}">
 							<td><textarea id="reply-content" name="replyContent"
 									cols="50" rows="3"></textarea></td>
@@ -185,7 +202,7 @@
 						</form>
 					</tr>
 				</thead>
-			
+
 				<tbody>
 					<c:forEach var="reply" items="${replyList}">
 						<tr>
