@@ -18,18 +18,14 @@ import com.kh.jsp.model.vo.FileUpload;
 
 public class FileDao {
 
-	
-	
 	private Properties prop = new Properties();
 
 	public FileDao() {
 		super();
 
-		String path = JDBCTemplate.class.getResource("/db/sql/file-mapper.xml").getPath();
-
-		try (InputStream is = JDBCTemplate.class.getResourceAsStream("/db/sql/file-mapper.xml")) {
+		try (InputStream is = JDBCTemplate.class.getClassLoader().getResourceAsStream("db/sql/file-mapper.xml")) {
 			if (is == null) {
-				throw new IOException("Resource not found");
+				throw new IOException("Resource not found: /db/sql/file-mapper.xml");
 			}
 			prop.loadFromXML(is);
 		} catch (IOException e) {
@@ -37,11 +33,8 @@ public class FileDao {
 		}
 	}
 
-	
-	
-	
-	public int insertFile(int boardNo ,FileUpload f, Connection conn) {
-		
+	public int insertFile(int boardNo, FileUpload f, Connection conn) {
+
 		int result = 0;
 
 		PreparedStatement pstmt = null;
@@ -52,9 +45,8 @@ public class FileDao {
 			pstmt = conn.prepareStatement(sql);
 
 			pstmt.setInt(1, boardNo);
-			pstmt.setString(2, f.getFileOriginalName()); 
-			pstmt.setString(3, f.getFilePath()); 
-		
+			pstmt.setString(2, f.getFileOriginalName());
+			pstmt.setString(3, f.getFilePath());
 
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -64,13 +56,11 @@ public class FileDao {
 		}
 
 		return result;
-		
+
 	}
-	
-	
-	
-	public List<FileUpload> selectFile(int boardNo , Connection conn) {
-		
+
+	public List<FileUpload> selectFile(int boardNo, Connection conn) {
+
 		List<FileUpload> fileList = new ArrayList<>();
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
@@ -79,15 +69,15 @@ public class FileDao {
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, boardNo);
-			
+
 			rset = pstmt.executeQuery();
-		
+
 			while (rset.next()) {
 				FileUpload file = FileUpload.selectCreateFile(rset.getInt("BOARD_NO"), rset.getString("ORIGIN_NAME"));
-			
+
 				fileList.add(file);
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -96,8 +86,62 @@ public class FileDao {
 		}
 
 		return fileList;
-		
+
 	}
-	
-	
+
+	public int updateFile(FileUpload ud, Connection conn) {
+
+		System.out.println("orignalName: " + ud.getFileOriginalName());
+		System.out.println("filePath: " + ud.getFilePath());
+		System.out.println("refBno: " + ud.getBoardNo());
+		int result = 0;
+
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("updateFile");
+
+		try {
+			// 테이블르 컬럼에 맞게 적절히 매핑하는 것이다.
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, ud.getFileOriginalName());
+			pstmt.setString(2, ud.getFilePath());
+			pstmt.setInt(3, ud.getBoardNo());
+
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+
+		return result;
+	}
+
+	public FileUpload selectFileForUpdate(int boardNo, Connection conn) {
+
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		FileUpload file = null; // 함수 시작 시 선언
+		String sql = prop.getProperty("selectFileByNo");
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, boardNo);
+
+			rset = pstmt.executeQuery();
+
+			if (rset.next()) { // rs가 다음 행으로 이동 가능한지 확인
+				file = FileUpload.selectCreateFile(rset.getInt("BOARD_NO"), rset.getString("ORIGIN_NAME"));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+
+		return file;
+	}
+
 }

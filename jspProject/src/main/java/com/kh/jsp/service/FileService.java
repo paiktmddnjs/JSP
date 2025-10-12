@@ -18,8 +18,8 @@ public class FileService {
 
 		Connection conn = getConnection();
 
-		int result = new FileDao().insertFile(boardNo , f , conn);
-		
+		int result = new FileDao().insertFile(boardNo, f, conn);
+
 		if (result > 0) {
 			commit(conn);
 		} else {
@@ -30,15 +30,13 @@ public class FileService {
 		return result;
 
 	}
-	
-	
-	
+
 	public List<FileUpload> getFilesByBoardNo(int boardNo) {
-		
+
 		Connection conn = getConnection();
 
-		 List<FileUpload> result = new FileDao().selectFile(boardNo, conn);
-		 
+		List<FileUpload> result = new FileDao().selectFile(boardNo, conn);
+
 		if (result != null) {
 			commit(conn);
 		} else {
@@ -47,8 +45,40 @@ public class FileService {
 		close(conn);
 
 		return result;
-		
+
 	}
-	
-	
+
+	public int updateFile(FileUpload updateFile) {
+
+		Connection conn = getConnection();
+
+		int result = new FileDao().updateFile(updateFile, conn);
+
+		if (result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		close(conn);
+
+		return result;
+	}
+
+	public FileUpload selectFileForUpdate(int boardNo) {
+
+		Connection conn = getConnection();
+		
+		FileUpload result = new FileDao().selectFileForUpdate(boardNo, conn);
+
+		if (result != null) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		close(conn);
+
+		return result;
+
+	}
+
 }

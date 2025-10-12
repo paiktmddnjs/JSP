@@ -187,12 +187,12 @@
 				<thead>
 					<tr>
 						<th width="120">댓글작성</th>
-<<<<<<< HEAD
+
 						<form action="${pageContext.request.contextPath}/insert.re" method="post">
-=======
+
 						<form action="${pageContext.request.contextPath}/insert.re"
 							method="post" style="display: inline;">
->>>>>>> b2d295c5e22bcce19af462d10822554ab94f1070
+
 							<input type="hidden" name="boardNo" value="${board.boardNo}">
 							<td><textarea id="reply-content" name="replyContent"
 									cols="50" rows="3"></textarea></td>

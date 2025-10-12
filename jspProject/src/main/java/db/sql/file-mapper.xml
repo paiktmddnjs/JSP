@@ -46,6 +46,17 @@
     	B.BOARD_NO = ?
 
 	</entry>
+	
+	 <entry key="updateFile">
 	 
+	 UPDATE 
+	 		ATTACHMENT
+	 SET 
+	 		ORIGIN_NAME = ?,
+    		FILE_PATH = ?
+	 WHERE 
+			REF_BNO = ?
+			
+	 </entry>
 
 </properties>

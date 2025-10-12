@@ -5,14 +5,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
 
 import com.kh.jsp.model.vo.Board;
 import com.kh.jsp.model.vo.FileUpload;
-import com.kh.jsp.model.vo.Member;
 import com.kh.jsp.model.vo.Reply;
 import com.kh.jsp.service.BoardService;
 import com.kh.jsp.service.FileService;
@@ -65,18 +63,14 @@ public class DetailController extends HttpServlet {
 	    		// 게시판 목록을 request에 저장
 	    		request.setAttribute("files", files);
 	    		request.setAttribute("replyList", replyList);
-
-	    		// 세션에 로그인한 회원 정보 가져오기
-	    		HttpSession session = request.getSession();
-	    		Member loginMember = (Member) session.getAttribute("loginMember");
+	    
+	   
 	            
 	            
-
 	            // 상세페이지 포워딩
 	            request.getRequestDispatcher("/WEB-INF/views/board/detailView.jsp").forward(request, response);
 	        } else {
 	            // 게시물이 존재하지 않으면 리스트로 이동 또는 에러 페이지 이동
-	        	request.getSession().setAttribute("alertMsg", "게시글이 존재하지않습니다!");
 	            response.sendRedirect(request.getContextPath() + "/list.bo");
 	        }
 	    }

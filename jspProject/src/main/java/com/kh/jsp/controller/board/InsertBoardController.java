@@ -104,7 +104,7 @@ public class InsertBoardController extends HttpServlet {
 					}
 
 					String uploadPath = getServletContext().getRealPath("/upload");
-					;
+					
 					File uploadDir = new File(uploadPath);
 					if (!uploadDir.exists())
 						uploadDir.mkdirs();
@@ -113,7 +113,7 @@ public class InsertBoardController extends HttpServlet {
 					filePart.write(filePath);
 					// 파일 이름이나 경로를 저장하는 로직 필요
 					FileUpload f = FileUpload.insertFile(fileName, uploadPath);
-					f.setFileBoardNo(boardNo);
+					
 
 					int fileResult = new FileService().insertFile(boardNo, f);
 

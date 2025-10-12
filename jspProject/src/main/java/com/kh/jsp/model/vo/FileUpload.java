@@ -47,5 +47,28 @@ import lombok.ToString;
 			return f;
 			
 		}
+		
+		
+		public static FileUpload updateCreateFile(int boardNo, String fileOriginalName, String filePath) {
+			
+			FileUpload f = new FileUpload();
+			
+			f.setBoardNo(boardNo);
+			f.setFileOriginalName(fileOriginalName);
+			f.setFilePath(filePath);
+			return f;
+			
+		}
+		
+		
+		public static FileUpload selectFileForUpdate(int boardNo) {
+			
+			
+			FileUpload f = new FileUpload();
+			
+			f.setBoardNo(boardNo);
+		
+			return f;
+		}
 
 }
