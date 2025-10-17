@@ -35,7 +35,7 @@ public class MemberService {
 	public Member updateMember(Member m) {
 		Connection conn = getConnection();
 		int result = new MemberDao().updateMember(m, conn);
-		
+
 		Member updateMember = null;
 		if (result > 0) {
 			commit(conn);
@@ -52,7 +52,7 @@ public class MemberService {
 
 		Connection conn = getConnection();
 		int result = new MemberDao().updateMemberPwd(memberId, updatePwd, conn);
-	
+
 		Member updateMember = null;
 
 		if (result > 0) {
@@ -65,21 +65,32 @@ public class MemberService {
 		return updateMember;
 
 	}
-	
 
 	public int deleteMember(String memberId) {
 		Connection conn = getConnection();
-		
+
 		int result = new MemberDao().deleteMember(memberId, conn);
-		
-		if(result > 0) {
+
+		if (result > 0) {
 			commit(conn);
 		} else {
 			rollback(conn);
 		}
-		
+
 		close(conn);
-		
+
 		return result;
+	}
+
+	
+	
+	public int idCheck(String checkId) {
+		Connection conn = getConnection();
+
+		int count = new MemberDao().idCheck(conn, checkId);
+
+		close(conn);
+
+		return count;
 	}
 }

@@ -72,17 +72,10 @@ public class MemberDao {
 			rset = pstmt.executeQuery();
 
 			if (rset.next()) {
-				m = new Member(rset.getInt("MEMBER_NO"),
-						rset.getString("MEMBER_ID"), 
-						rset.getString("MEMBER_PWD"),
-						rset.getString("MEMBER_NAME"), 
-						rset.getString("PHONE"), 
-						rset.getString("EMAIL"),
-						rset.getString("ADDRESS"), 
-						rset.getString("INTEREST"), 
-						rset.getDate("ENROLL_DATE"),
-						rset.getDate("MODIFY_DATE"), 
-						rset.getString("STATUS"));
+				m = new Member(rset.getInt("MEMBER_NO"), rset.getString("MEMBER_ID"), rset.getString("MEMBER_PWD"),
+						rset.getString("MEMBER_NAME"), rset.getString("PHONE"), rset.getString("EMAIL"),
+						rset.getString("ADDRESS"), rset.getString("INTEREST"), rset.getDate("ENROLL_DATE"),
+						rset.getDate("MODIFY_DATE"), rset.getString("STATUS"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -100,10 +93,9 @@ public class MemberDao {
 
 		PreparedStatement pstmt = null;
 		String sql = prop.getProperty("updateMember");
-	
 
 		try {
-			
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, m.getPhone());
 			pstmt.setString(2, m.getEmail());
@@ -120,16 +112,13 @@ public class MemberDao {
 
 		return result;
 	}
-	
-	
-	
-	
-	public int updateMemberPwd(String memberId, String updatePwd , Connection conn) {
+
+	public int updateMemberPwd(String memberId, String updatePwd, Connection conn) {
 
 		int result = 0;
 
 		PreparedStatement pstmt = null;
-		
+
 		String sql = prop.getProperty("updateMemberPwd");
 
 		try {
@@ -146,9 +135,7 @@ public class MemberDao {
 
 		return result;
 	}
-	
-	
-	
+
 	public Member selectMemberByUserId(String userId, Connection conn) {
 		// select -> Member조회 -> ResultSet(한개또는 0)
 		Member m = null;
@@ -161,21 +148,13 @@ public class MemberDao {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userId);
 
-
 			rset = pstmt.executeQuery();
 
 			if (rset.next()) {
-				m = new Member(rset.getInt("MEMBER_NO"), 
-						rset.getString("MEMBER_ID"), 
-						rset.getString("MEMBER_PWD"),
-						rset.getString("MEMBER_NAME"), 
-						rset.getString("PHONE"), 
-						rset.getString("EMAIL"),
-						rset.getString("ADDRESS"), 
-						rset.getString("INTEREST"), 
-						rset.getDate("ENROLL_DATE"),
-						rset.getDate("MODIFY_DATE"), 
-						rset.getString("STATUS"));
+				m = new Member(rset.getInt("MEMBER_NO"), rset.getString("MEMBER_ID"), rset.getString("MEMBER_PWD"),
+						rset.getString("MEMBER_NAME"), rset.getString("PHONE"), rset.getString("EMAIL"),
+						rset.getString("ADDRESS"), rset.getString("INTEREST"), rset.getDate("ENROLL_DATE"),
+						rset.getDate("MODIFY_DATE"), rset.getString("STATUS"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -186,29 +165,54 @@ public class MemberDao {
 
 		return m;
 	}
-	
-	
-	
+
 	public int deleteMember(String memberId, Connection conn) {
-		//update -> 처리된 행 수
-		
-		int result = 0;	
+		// update -> 처리된 행 수
+
+		int result = 0;
 		PreparedStatement pstmt = null;
-		
+
 		String sql = prop.getProperty("deleteMember");
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, memberId);
-			
+
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			close(pstmt);
 		}
-		
+
 		return result;
+	}
+
+	public int idCheck(Connection conn, String checkId) {
+		// select -> 동일한 ID로 가입된 멤버 수 -> ResultSet(count)
+		int count = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String sql = prop.getProperty("idCheck");
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, checkId);
+
+			rset = pstmt.executeQuery();
+
+			if (rset.next()) {
+				count = rset.getInt("COUNT");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+
+		return count;
 	}
 
 }

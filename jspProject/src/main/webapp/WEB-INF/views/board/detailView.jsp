@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -119,7 +120,8 @@
 }
 </style>
 </head>
-<body onload="init(${board.boardNo})"> <!-- 서버측에서 boarNo을 받아와서 해당 번호의 상세페이지를 보여준다. -->
+<body onload="init(${board.boardNo})">
+	<!-- 서버측에서 boarNo을 받아와서 해당 번호의 상세페이지를 보여준다. -->
 
 	<jsp:include page="/WEB-INF/views/common/menubar.jsp" />
 
@@ -159,7 +161,7 @@
 					<td><c:choose>
 							<c:when test="${not empty files}">
 								<c:forEach var="file" items="${files}">
-									<a
+									<a download="${file.fileOriginalName}"
 										href="${pageContext.request.contextPath}/upload/${file.fileOriginalName}"
 										target="_blank"> ${file.fileOriginalName}</a>
 									<br />
@@ -187,19 +189,23 @@
 				<thead>
 					<tr>
 						<th width="120">댓글작성</th>
-
-						<form action="${pageContext.request.contextPath}/insert.re" method="post">
-
-						<form action="${pageContext.request.contextPath}/insert.re"
-							method="post" style="display: inline;">
-
-							<input type="hidden" name="boardNo" value="${board.boardNo}">
-							<td><textarea id="reply-content" name="replyContent"
-									cols="50" rows="3"></textarea></td>
-							<td width="100">
-								<button type="submit" class="btn btn-primary reply-btn">댓글등록</button>
-							</td>
-						</form>
+						<c:choose>
+							<c:when test="${loginMember != null}">
+								<td><textarea id="reply-content" cols="50" rows="3"></textarea>
+								</td>
+								<td width="100">
+									<button class="btn btn-primary reply-btn"
+										onclick="insertReply(${board.boardNo})">댓글등록</button>
+								</td>
+							</c:when>
+							<c:otherwise>
+								<td><textarea cols="50" rows="3" readonly>댓글등록은 로그인이 필요합니다.</textarea>
+								</td>
+								<td width="100">
+									<button class="btn btn-primary reply-btn" disabled>댓글등록</button>
+								</td>
+							</c:otherwise>
+						</c:choose>
 					</tr>
 				</thead>
 
@@ -221,5 +227,96 @@
 			</table>
 		</div>
 	</div>
+
+	<script>
+	//콜백 함수 
+	//- 다른 함수의 인자로 전달되어 나중에 호출되는 함수
+	//- 내가 직접 실행하지않고 특정 시점에 다른 함수가 실행해주는 함수
+	//- 비동기 코드에서 많이 사용한다. 예를들면 $.ajax에 전달하는 success와 error에 대한 함수도 콜백함수.
+	//- 함수의 동작을 외부에서 결정할 수 있어서 코드를 깔끔하게 분리할 수 있다.
+	function init(bno){
+		getReplyList(bno, drawReplyList);
+	}
+		
+	//서버로부터 댓글목록 가져와서 전달
+	 function getReplyList(bno, callback){
+		 $.ajax({
+			 url: "rlist.bo",
+			 //contextType: "application/json" //요청데이터 타입
+			 dataType: "json", //응답 데이터 타입(json, text, html, xml...)
+			 data: {
+				boardNo : bno
+			 },
+			 success: function(res){
+				 callback(res);
+			 },
+			 error: function(err){
+				console.log("댓글 로드 ajax 실패");
+			 }
+		 })
+	 }
+	 
+	 function drawReplyList(replyList){
+		const replyContainer = document.querySelector("#reply-container");
+
+		//내부에 이미 그려진 dom을 제거
+		replyContainer.innerHTML = "";
+
+		for(let r of replyList){
+			const replyRow = document.createElement("tr");
+			replyRow.innerHTML = "<td>" + r.memberId + "</td>" +
+								 "<td class='text-start'>" + 
+									r.replyContent +
+									"<div class='small text-secondary mt-1'>" + r.createDate + "</div>" +
+								 "</td>" + 
+								 "<td><button class='btn btn-outline-danger btn-sm'>삭제</button></td>";
+			
+			let deleteBtn = replyRow.querySelector("button");
+			deleteBtn.addEventListener("click", function(){
+				deleteReply(r.replyNo, function(){
+					console.log("삭제 성공");
+				});
+			});
+
+			replyContainer.appendChild(replyRow);
+		}
+	 }
+
+	 function deleteReply(replyNo, callback){
+		 $.ajax({
+			 url: "rdelete.bo",
+			 data: {
+				replyNo : replyNo, 
+			 },
+			 success: function(res){
+				 callback();
+			 },
+			 error: function(err){
+				console.log("댓글 삭제 ajax 실패");
+			 }
+		 })
+	 }
+	
+	 function insertReply(bno){
+		const contentInput = document.querySelector("#reply-content");
+
+		 $.ajax({
+			 url: "rinsert.bo",
+			 type: "post",
+			 data: {
+				boardNo : bno, 
+				content: contentInput.value
+			 },
+			 success: function(res){
+				 if(res === "1") {
+				 	getReplyList(bno, drawReplyList);
+				 }
+			 },
+			 error: function(err){
+				console.log("댓글 작성 ajax 실패");
+			 }
+		 })
+	 }
+	</script>
 </body>
 </html>

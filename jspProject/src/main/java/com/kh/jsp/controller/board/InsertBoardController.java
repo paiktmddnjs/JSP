@@ -54,6 +54,14 @@ public class InsertBoardController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		
+		/* 
+		 * commons-fileupload2-core : 멀티파트에 요청에 대한 처리기능을 구현하는 라이브러리
+		 * commons-fileupload2-jakarta : javax.servlet -> jakarta.servlet 패키지를 사용하게 하는 라이브러리
+		 * commons-io-2.20.0 : 파일 읽기/쓰기에 대한 스트림에 구현하고 있는 라이브러리
+		 * 
+		 * 
+		 */
 		// 요청 파라미터 추출
 		String categoryNoStr = request.getParameter("category");
 

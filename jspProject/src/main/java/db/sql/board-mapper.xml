@@ -1,22 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+
+	<entry key="selectAllBoardCount">
+		
+		SELECT COUNT(*) AS COUNT
+		FROM BOARD
+		WHERE BOARD_TYPE = 1
+		 AND STATUS = 'Y'
+
+	</entry>
+	
 	<entry key="selectBoard">
 
-		SELECT
-   			B.BOARD_NO,
-   			B.CATEGORY_NO,
-    		B.BOARD_TITLE,
-    		B.BOARD_WRITER,
-   			M.MEMBER_NAME,
-    		B.COUNT,
-    		B.CREATE_DATE
-		FROM
-    		BOARD B
-		JOIN
-    		MEMBER M ON B.BOARD_WRITER = M.MEMBER_NO
-		WHERE
-    		B.STATUS = 'Y'
+			SELECT *
+			FROM(
+				SELECT ROWNUM RNUM, A.* 
+			FROM (SELECT BOARD_NO, 
+				CATEGORY_NAME,
+				BOARD_TITLE,
+				MEMBER_ID,
+				COUNT,
+				TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS "CREATE_DATE"
+		FROM BOARD B
+		JOIN CATEGORY USING(CATEGORY_NO)
+		JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
+		WHERE B.STATUS = 'Y'
+			AND BOARD_TYPE = 1
+		ORDER BY BOARD_NO DESC) A)
+		WHERE RNUM BETWEEN ? AND ?
 
 	</entry>
 
@@ -109,4 +121,36 @@
 		BOARD_NO = ?
 
 	</entry>
+	
+	
+	<entry key="insertReply">
+		INSERT
+		INTO REPLY(
+			REPLY_NO,
+			REPLY_CONTENT,
+			REF_BNO,
+			REPLY_WRITER
+		) VALUES(
+			SEQ_RNO.NEXTVAL,
+			?,
+			?,
+			?
+		)
+	</entry>
+	<entry key="selectThumbnailList">
+	
+	SELECT BOARD_NO,
+			BOARD_TITLE,
+			COUNT,
+			FILE_PATH || CHANGE_NO AS "THUMBNAIL_IMG"
+			FROM BOARD B
+			JOIN ATTACHMENT A ON(BOARD_NO = REF_BNO)
+			WHERE B.STATUS = 'Y'
+			AND BOARD_TYPE = 2
+			AND FILE_LEVEL = 1
+			OREDER BY BOARD_NO DESC
+	
+	</entry>
+	
+	
 </properties>

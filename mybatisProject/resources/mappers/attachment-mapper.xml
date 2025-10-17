@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AttachmentMapper">
+	<resultMap id="attachmentResultMap" type="Attachment">
+		<result column="FILE_NO" property="fileNo" />
+		<result column="REF_BNO"	property="refBoardNo"/>
+		<result column="ORIGIN_NAME" property="originName"/>
+		<result column="CHANGE_NAME" property="changeName" />
+		<result column="FILE_PATH" property="filePath" />
+		<result column="UPLOAD_DATE" property="uploadDate" />
+		<result column="FILE_LEVEL" property="fileLevel" />
+		<result column="STATUS" property="status" />
+	</resultMap>
+	
+	
+	
+	
+	<insert id="insertAttachment" parameterType="Attachment">
+	
+	INSERT
+		INTO ATTACHMENT(
+			FILE_NO,
+			REF_BNO,
+			ORIGIN_NAME,
+			CHANGE_NAME,
+			FILE_PATH
+			
+		) VALUES(
+			SEQ_FNO.NEXTVAL,
+			SEQ_BNO.CURRVAL,
+			#{originName},
+			#{changeName},
+			#{filePath}
+		)
+	
+	
+	</insert>
+	
+</mapper>

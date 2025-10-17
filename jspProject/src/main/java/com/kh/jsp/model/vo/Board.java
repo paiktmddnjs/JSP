@@ -25,6 +25,8 @@ public class Board {
 	private int count;
 	private Date createDate;
 	private String status;
+	
+	private String thumbnailImg;
 
 	public static Board selectCreateBoard(int boardId, int categoryNo, String boardTitle, String memberName, int count,
 			Date create_Date) {

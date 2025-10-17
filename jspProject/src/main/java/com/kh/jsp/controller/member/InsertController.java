@@ -45,7 +45,7 @@ public class InsertController extends HttpServlet {
 
 		// String[] -> string
 		String interest = "";
-		if (interestArr != null) { //널이 아니면 각값에 대해 ,를 붙여준다.
+		if (interestArr != null) { // 널이 아니면 각값에 대해 ,를 붙여준다.
 			interest = String.join(",", interestArr);
 		}
 

@@ -14,6 +14,8 @@ import java.util.Properties;
 
 import com.kh.jsp.common.JDBCTemplate;
 import com.kh.jsp.model.vo.Board;
+import com.kh.jsp.model.vo.PageInfo;
+import com.kh.jsp.model.vo.Reply;
 
 public class BoardDao {
 
@@ -34,7 +36,7 @@ public class BoardDao {
 		}
 	}
 
-	public List<Board> selectBoard(Connection conn) {
+	public List<Board> selectBoard(Connection conn, PageInfo pi) {
 
 		List<Board> boardList = new ArrayList<>();
 		PreparedStatement pstmt = null; // SQL 실행을 위한 객체
@@ -42,15 +44,25 @@ public class BoardDao {
 		String sql = prop.getProperty("selectBoard");
 
 		try {
-			pstmt = conn.prepareStatement(sql); //SQL문을 컴파일하고 실행 준비 상태를 저장
+
+			int startRow = (pi.getCurrentPage() - 1) * pi.getBoardLimit() + 1;
+			int endRow = startRow + pi.getBoardLimit() - 1;
+
+			pstmt = conn.prepareStatement(sql); // SQL문을 컴파일하고 실행 준비 상태를 저장
+			pstmt.setInt(1, startRow);
+			pstmt.setInt(2, endRow);
+
 			rset = pstmt.executeQuery(); // SQL을 실행하고 그 결과를 저장
 
-			while (rset.next()) {// rset을 순회해서 더 이상 행이 없으면 fasle를 반환하여 반복문이 종료된다.
-				Board board = Board.selectCreateBoard(rset.getInt("BOARD_NO"), rset.getInt("CATEGORY_NO"),
-						rset.getString("BOARD_TITLE"), rset.getString("MEMBER_NAME"), rset.getInt("COUNT"),
-						rset.getDate("CREATE_DATE"));
-				// 리스트에 추가하는 등 후속 처리
-				boardList.add(board);
+			while (rset.next()) {
+				Board b = new Board();
+				b.setBoardNo(rset.getInt("BOARD_NO"));
+				b.setCategoryNo(rset.getInt("CATEGORY_NAME"));
+				b.setBoardTitle(rset.getString("BOARD_TITLE"));
+				b.setMemberName(rset.getString("MEMBER_NAME"));
+				b.setCount(rset.getInt("COUNT"));
+				b.setCreateDate(rset.getDate("CREATE_DATE"));
+				boardList.add(b);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -154,6 +166,32 @@ public class BoardDao {
 		}
 	}
 
+	public int selectAllBoardCount(Connection conn) {
+
+		int listCount = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String sql = prop.getProperty("selectAllBoardCount");
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+
+			if (rset.next()) {
+
+				listCount = rset.getInt("Count");
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		return listCount;
+	}
+
 	public int updateBoard(Board b, Connection conn) {
 
 		int result = 0;
@@ -202,4 +240,63 @@ public class BoardDao {
 		return false;
 
 	}
+
+	public int insertReply(Connection conn, Reply r) {
+		// 새로운 Reply -> insert -> int(1 또는 0)
+
+		int result = 0;
+
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("insertReply");
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, r.getReplyContent());
+			pstmt.setInt(2, r.getReplyBoardNo());
+			pstmt.setInt(3, r.getReplyWriter());
+
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+
+		return result;
+	}
+
+	public ArrayList<Board> selectThumnailList(Connection conn) {
+		// select -> ResultSet(여러개) -> ArrayList
+		ArrayList<Board> list = new ArrayList<>();
+
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String sql = prop.getProperty("selectThumnailList");
+
+		try {
+
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+
+			while (rset.next()) {
+				Board b = new Board();
+				b.setBoardNo(rset.getInt("BOARD_NO"));
+				b.setBoardTitle(rset.getString("BOARD_TITLE"));
+				b.setCount(rset.getInt("COUNT"));
+				b.setThumbnailImg(rset.getString("THUMBNAIL_IMG"));
+
+				list.add(b);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+
+		return list;
+	}
+
 }

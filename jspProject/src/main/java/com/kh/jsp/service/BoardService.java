@@ -6,18 +6,36 @@ import static com.kh.jsp.common.JDBCTemplate.getConnection;
 import static com.kh.jsp.common.JDBCTemplate.rollback;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kh.jsp.model.dao.BoardDao;
+import com.kh.jsp.model.dao.FileDao;
 import com.kh.jsp.model.vo.Board;
-
+import com.kh.jsp.model.vo.FileUpload;
+import com.kh.jsp.model.vo.PageInfo;
+import com.kh.jsp.model.vo.Reply;
 
 public class BoardService {
 
-	public List<Board> getBoardList() {
+	public int selectAllBoardCount() {
 		Connection conn = getConnection();
 
-		List<Board> result = new BoardDao().selectBoard(conn);
+		int listCount = new BoardDao().selectAllBoardCount(conn);
+		if (listCount > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		close(conn);
+
+		return listCount;
+	}
+
+	public List<Board> getBoardList(PageInfo pf) {
+		Connection conn = getConnection();
+
+		List<Board> result = new BoardDao().selectBoard(conn, pf);
 		if (!result.isEmpty()) {
 			commit(conn);
 		} else {
@@ -28,17 +46,26 @@ public class BoardService {
 		return result;
 	}
 
-	public int insertBoard(Board b) {
+	public int insertBoard(Board b, FileUpload at) {
 		Connection conn = getConnection();
 
-		int result = new BoardDao().insertBoard(b, conn);
+		BoardDao bDao = new BoardDao();
+		FileDao fDao = new FileDao();
+
+		b.setBoardType(1);
+		int result = bDao.insertBoard(b ,conn);
+
+		if (at != null) {
+			result *= FileDao.insertFileUpload(at ,conn);
+		}
+
 		if (result > 0) {
 			commit(conn);
 		} else {
 			rollback(conn);
 		}
-		close(conn);
 
+		close(conn);
 		return result;
 	}
 
@@ -72,40 +99,62 @@ public class BoardService {
 		return result;
 
 	}
-	
-	
-	
+
 	public Board updateBoard(Board b) {
 		Connection conn = getConnection();
 		int result = new BoardDao().updateBoard(b, conn);
-		
+
 		Board updateBoard = null;
 		if (result > 0) {
 			commit(conn);
-			 updateBoard = new BoardDao().selectDetailBoard(b.getBoardNo(), conn);
+			updateBoard = new BoardDao().selectDetailBoard(b.getBoardNo(), conn);
 		} else {
 			rollback(conn);
 
 		}
 		close(conn);
 		return updateBoard;
-		
+
 	}
-	
+
 	public boolean deleteBoard(int boardNo) {
-	Connection conn = getConnection();
-		
+		Connection conn = getConnection();
+
 		boolean result = new BoardDao().deleteBoard(boardNo, conn);
-		
-		if(result) {
+
+		if (result) {
 			commit(conn);
 		} else {
 			rollback(conn);
 		}
-		
+
 		close(conn);
-		
+
 		return result;
-		
+
+	}
+
+	public int insertReply(Reply r) {
+		Connection conn = getConnection();
+
+		int result = new BoardDao().insertReply(conn, r);
+
+		if (result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+
+		close(conn);
+		return result;
+	}
+
+	public ArrayList<Board> selectThumnailList() {
+		Connection conn = getConnection();
+
+		ArrayList<Board> list = new BoardDao().selectThumnailList(conn);
+		close(conn);
+
+		return list;
 	}
 }

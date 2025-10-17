@@ -22,7 +22,7 @@ import lombok.ToString;
 		private String fileChangeName;
 		private String filePath;
 		private Date uploadDate;
-		private String fileLevel;
+		private int fileLevel;
 		private String status;
 	
 
