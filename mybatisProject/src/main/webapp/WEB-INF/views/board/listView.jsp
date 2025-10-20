@@ -36,7 +36,6 @@
             margin-bottom: 1rem;
         }
 
-<<<<<<< HEAD
         #search-area{
             display: flex;
             justify-content: center;
@@ -84,41 +83,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-=======
-        .board-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 2rem;
-        }
-
-        .board-table thead {
-            background: #4b89fc;
-            color: white;
-        }
-
-        .board-table th,
-        .board-table td {
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .board-table th {
-            font-weight: 500;
-        }
-
-        .board-table tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        .board-table tbody tr:hover {
-            background-color: #f5f8ff;
-            cursor: pointer;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
->>>>>>> b91efb9e486767370c0ac4cafbf86184ff9596a2
         .pagination {
             display: flex;
             justify-content: center;
@@ -134,11 +98,7 @@
 <body>
 	<jsp:include page="/WEB-INF/views/common/menubar.jsp" />
 
-<<<<<<< HEAD
     <div class="board-container"> 
-=======
-    <div class="board-container">
->>>>>>> b91efb9e486767370c0ac4cafbf86184ff9596a2
         <div class="board-card">
             <h2>일반게시판</h2>
 
@@ -147,7 +107,6 @@
 	                <a class="btn btn-primary" href="${pageContext.request.contextPath}/enrollForm.bo">글쓰기</a>
 	            </div>
             </c:if>
-<<<<<<< HEAD
             
             <div id="search-area">
                 <form action="${pageContext.request.contextPath}/search.bo" method="get">
@@ -160,8 +119,6 @@
                     <button type="submit" class="btn btn-primary btn-sm">검색</button>
                 </form>
             </div>
-=======
->>>>>>> b91efb9e486767370c0ac4cafbf86184ff9596a2
 
             <table class="board-table">
                 <thead>
