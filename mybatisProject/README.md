@@ -18,6 +18,9 @@ MyBatis를 이용한 이전 웹페이지의 재구현
 | Database | Oracle |
 | Tools | Eclipse, Git, GitHub |
 
+<br>
+<br>
+
 ## 🛠️ 설치 및 실행 (Installation & Run)
 # 1. 프로젝트 클론
 git clone https://github.com/paiktmddnjs/JSP/tree/main/mybatisProject
@@ -37,7 +40,7 @@ git clone https://github.com/paiktmddnjs/JSP/tree/main/mybatisProject
 
 # 5. 웹 애플리케이션 실행
 - 브라우저에서 접속
-http://localhost:8080/프로젝트명
+http://localhost:8080/mybatisProject
 
 
 <br>
