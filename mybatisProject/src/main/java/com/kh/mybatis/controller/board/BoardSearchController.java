@@ -13,7 +13,7 @@ import com.kh.mybatis.model.vo.Board;
 import com.kh.mybatis.model.vo.PageInfo;
 import com.kh.mybatis.service.BoardService;
 
-@WebServlet("/BoardSearchController")
+@WebServlet("/search.bo")
 public class BoardSearchController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
