@@ -27,7 +27,7 @@ public class BoardService {
 	public int selectAllBoardCount(HashMap<String, String> searchMap) {
 		SqlSession sqlSession = Template.getSqlSession();
 
-		int listCount = boardDao.selectAllBoardCount(sqlSession);
+		int listCount = boardDao.selectAllBoardCount(sqlSession ,searchMap);
 
 		sqlSession.close();
 
