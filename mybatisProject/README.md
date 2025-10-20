@@ -45,6 +45,7 @@ http://localhost:8080/프로젝트명
 
 ## 📂 프로젝트 구조 (Directory Structure)
 
+<pre>
 📦mybatisProject
  ┣ 📂.settings
  ┃ ┣ 📜.jsdtscope
@@ -155,6 +156,7 @@ http://localhost:8080/프로젝트명
  ┃ ┃ ┃ ┗ 📜index.jsp
  ┣ 📜.classpath
  ┗ 📜.project
+</pre>
 
 <br>
 <br>
