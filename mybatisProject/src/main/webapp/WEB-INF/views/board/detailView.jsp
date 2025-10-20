@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -121,8 +120,6 @@
 </style>
 </head>
 <body onload="init(${board.boardNo})">
-	<!-- 서버측에서 boarNo을 받아와서 해당 번호의 상세페이지를 보여준다. -->
-
 	<jsp:include page="/WEB-INF/views/common/menubar.jsp" />
 
 	<div class="board-container">
@@ -132,21 +129,13 @@
 			<table class="detail-table">
 				<tr>
 					<th>카테고리</th>
-					<td><c:choose>
-							<c:when test="${board.categoryNo == 10}">공통</c:when>
-							<c:when test="${board.categoryNo == 20}">운동</c:when>
-							<c:when test="${board.categoryNo == 30}">등산</c:when>
-							<c:when test="${board.categoryNo == 40}">게임</c:when>
-							<c:when test="${board.categoryNo == 50}">낚시</c:when>
-							<c:when test="${board.categoryNo == 60}">요리</c:when>
-							<c:when test="${board.categoryNo == 70}">기타</c:when>
-						</c:choose></td>
+					<td>${board.categoryName}</td>
 					<th>제목</th>
 					<td colspan="3">${board.boardTitle}</td>
 				</tr>
 				<tr>
 					<th>작성자</th>
-					<td>${board.memberName}</td>
+					<td>${board.memberId}</td>
 					<th>작성일</th>
 					<td>${board.createDate}</td>
 				</tr>
@@ -158,29 +147,28 @@
 				</tr>
 				<tr>
 					<th>첨부파일</th>
-					<td><c:choose>
-							<c:when test="${not empty files}">
-								<c:forEach var="file" items="${files}">
-									<a download="${file.fileOriginalName}"
-										href="${pageContext.request.contextPath}/upload/${file.fileOriginalName}"
-										target="_blank"> ${file.fileOriginalName}</a>
-									<br />
-								</c:forEach>
+					<td colspan="3"><c:choose>
+							<c:when test="${empty at}">
+								첨부파일이 없습니다.
 							</c:when>
 							<c:otherwise>
-            첨부파일이 없습니다.
-        </c:otherwise>
+								<a download="${at.originName}"
+									href="${pageContext.request.contextPath}/${at.filePath}${at.changeName}">
+									${at.originName} </a>
+							</c:otherwise>
 						</c:choose></td>
 				</tr>
 			</table>
 
 			<div class="button-group">
-				<a href="${pageContext.request.contextPath}/list.bo"
-					class="btn btn-primary">목록가기</a> <a
-					href="${pageContext.request.contextPath}/myDetailView.bo?boardNo=${board.boardNo}"
-					class="btn btn-warning">수정하기</a> <a
-					href="${pageContext.request.contextPath}/delete.bo?boardNo=${board.boardNo}"
-					class="btn btn-danger">삭제하기</a>
+				<a class="btn btn-primary">목록가기</a>
+				<c:if
+					test="${loginMember != null && loginMember.memberId == board.memberId}">
+					<a class="btn btn-warning"
+						href="${pageContext.request.contextPath}/updateForm.bo?bno=${board.boardNo}">수정하기</a>
+					<a class="btn btn-danger"
+						href="${pageContext.request.contextPath}/delete.bo?bno=${board.boardNo}">삭제하기</a>
+				</c:if>
 			</div>
 		</div>
 
@@ -208,21 +196,8 @@
 						</c:choose>
 					</tr>
 				</thead>
-
-				<tbody>
-					<c:forEach var="reply" items="${replyList}">
-						<tr>
-							<td>${reply.replyWriter}</td>
-							<td style="text-align: left;">${reply.replyContent}</td>
-							<td>${reply.createDate}</td>
-						</tr>
-					</c:forEach>
-
-					<c:if test="${empty replyList}">
-						<tr>
-							<td colspan="3">등록된 댓글이 없습니다.</td>
-						</tr>
-					</c:if>
+				<tbody id="reply-container">
+					<!-- 댓글 목록이 여기에 동적으로 추가됩니다 -->
 				</tbody>
 			</table>
 		</div>
@@ -248,7 +223,7 @@
 				boardNo : bno
 			 },
 			 success: function(res){
-				 callback(res);
+				 callback(res, bno);
 			 },
 			 error: function(err){
 				console.log("댓글 로드 ajax 실패");
@@ -256,7 +231,7 @@
 		 })
 	 }
 	 
-	 function drawReplyList(replyList){
+	 function drawReplyList(replyList, bno){
 		const replyContainer = document.querySelector("#reply-container");
 
 		//내부에 이미 그려진 dom을 제거
@@ -274,7 +249,7 @@
 			let deleteBtn = replyRow.querySelector("button");
 			deleteBtn.addEventListener("click", function(){
 				deleteReply(r.replyNo, function(){
-					console.log("삭제 성공");
+					getReplyList(bno, drawReplyList);
 				});
 			});
 
@@ -289,7 +264,8 @@
 				replyNo : replyNo, 
 			 },
 			 success: function(res){
-				 callback();
+				 if(res === "1")
+				 	callback();
 			 },
 			 error: function(err){
 				console.log("댓글 삭제 ajax 실패");
@@ -309,6 +285,7 @@
 			 },
 			 success: function(res){
 				 if(res === "1") {
+					contentInput.value = "";
 				 	getReplyList(bno, drawReplyList);
 				 }
 			 },

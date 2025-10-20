@@ -9,6 +9,8 @@
 		<result column="BOARD_TYPE"	property="boardType"/>
 		<result column="CATEGORY_NO" property="categoryNo"/>
 		<result column="CATEGORY_NAME" property="categoryName" />
+		<result column="BOARD_WRITER" property="boardWriter" />
+		<result column="BOARD_CONTENT" property="boardContent" />
 		<result column="BOARD_TITLE" property="boardTitle" />
 		<result column="MEMBER_ID" property="memberId" />
 		<result column="COUNT" property="count" />
@@ -21,6 +23,26 @@
 		SELECT COUNT(*)
 		FROM BOARD
 		WHERE STATUS = 'Y'
+	</select>
+	
+	
+	<select id="searchBoardCount" resultType="_int">
+		SELECT COUNT(*)
+		 	FROM BOARD B
+		 	JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
+		 	WHERE B.STATUS = 'Y'
+		 <choose>
+		 	<when test="condition == 'writer'">
+		 		AND MEMBER_ID
+		 	</when>
+		 	<when test="condition == 'title'">
+		 		AND BOARD_TITLE
+		 	</when>
+		 	<otherwise>
+		 		AND BOARD_CONTENT
+		 	</otherwise>
+		 </choose>
+		  LIKE '%${keyword}%'
 	</select>
 	
 	
@@ -39,6 +61,35 @@
 		AND BOARD_TYPE = 1
 		ORDER BY BOARD_NO DESC
 	</select>
+	
+	
+	<select id="selectBoard" resultMap="boardResultMap">
+		SELECT BOARD_NO,
+			CATEGORY_NAME,
+			BOARD_TITLE,
+			MEMBER_ID,
+			COUNT,
+			TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS "CREATE_DATE"
+		FROM BOARD B
+			JOIN CATEGORY USING(CATEGORY_NO)
+			JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
+		WHERE B.STATUS = 'Y'
+		AND BOARD_TYPE = 1
+		 <choose>
+		 	<when test="condition == 'writer'">
+		 		AND MEMBER_ID
+		 	</when>
+		 	<when test="condition == 'title'">
+		 		AND BOARD_TITLE
+		 	</when>
+		 	<otherwise>
+		 		AND BOARD_CONTENT
+		 	</otherwise>
+		 </choose>
+			LIKE '%${keyword}%'
+		ORDER BY BOARD_NO DESC
+	</select>
+	
 	
 	
 	<insert id="insertBoard" parameterType="Board">
@@ -61,6 +112,35 @@
 		)
 	
 	</insert>
+	
+	<update id="increaseCount" parameterType="int">
+	
+		UPDATE BOARD
+		   SET COUNT = COUNT + 1
+		 WHERE BOARD_NO = #{boardNo}
+		   AND STATUS = 'Y'
+	
+	
+	</update>
+	
+	
+	<select id="selectBoardByBoardNo" parameterType="int" resultMap="boardResultMap">
+  SELECT
+    b.BOARD_NO,
+    c.CATEGORY_NAME,
+    b.CATEGORY_NO,
+    b.BOARD_TITLE,
+    b.BOARD_CONTENT,
+    m.MEMBER_ID,
+    b.COUNT,
+   TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS "CREATE_DATE"
+  FROM board b
+  LEFT JOIN category c ON b.category_no = c.category_no
+  LEFT JOIN member m ON b.BOARD_WRITER = m.MEMBER_NO
+  WHERE b.STATUS = 'Y' AND b.BOARD_NO = #{boardNo}
+</select>
+	
+	
 
 	
 </mapper>

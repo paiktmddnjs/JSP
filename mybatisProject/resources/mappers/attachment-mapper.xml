@@ -39,4 +39,17 @@
 	
 	</insert>
 	
+	
+	<select id="selectAttachment" parameterType="int" resultType="Attachment">
+	
+		SELECT FILE_NO,
+				ORIGIN_NAME,
+				CHANGE_NAME,
+				FILE_PATH,
+				FILE_LEVEL
+		  FROM ATTACHMENT
+		 WHERE REF_BNO = #{refBoardNo}
+	
+	</select>
+	
 </mapper>

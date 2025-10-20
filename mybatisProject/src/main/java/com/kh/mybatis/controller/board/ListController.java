@@ -45,7 +45,7 @@ public class ListController extends HttpServlet {
 		
 		request.setAttribute("list", list);
 		request.setAttribute("pi", pi);
-		request.getRequestDispatcher("views/board/listView.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/views/board/listView.jsp").forward(request, response);
 	}
 
 	/**

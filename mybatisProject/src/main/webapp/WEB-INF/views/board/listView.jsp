@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -52,6 +53,20 @@
 	border-bottom: 1px solid #e0e0e0;
 }
 
+#search-area {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+#search-area>form {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: center;
+}
+
 .board-table th {
 	font-weight: 500;
 }
@@ -86,10 +101,24 @@
 		<div class="board-card">
 			<h2>일반게시판</h2>
 
-			<div class="write-btn-area">
-				<a class="btn btn-primary"
-					href="${pageContext.request.contextPath}/enrollFrom.bo">글쓰기</a>
+			<c:if test="${not empty loginMember}">
+				<div class="write-btn-area">
+					<a class="btn btn-primary"
+						href="${pageContext.request.contextPath}/enrollForm.bo">글쓰기</a>
+				</div>
+			</c:if>
+
+			<div id="search-area">
+				<form action="">
+					<select name="condition">
+						<option value="writer">작성자</option>
+						<option value="title">제목</option>
+						<option value="content">내용</option>
+					</select> <input type="text" name="keyword" placeholder="검색어를 입력하세요..." />
+					<button type="submit">검색</button>
+				</form>
 			</div>
+
 
 			<table class="board-table">
 				<thead>
@@ -103,62 +132,50 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:choose>
-						<c:when test="${empty boardList}">
-							<tr>
-								<td colspan="6">게시글이 없습니다.</td>
-							</tr>
-						</c:when>
-						<c:otherwise>
-							<c:forEach var="board" items="${boardList}">
-								<tr class="clickable" data-boardno="${board.boardNo}">
-									<td>${board.boardNo}</td>
-									<td><c:choose>
-											<c:when test="${board.categoryNo == 10}">공통</c:when>
-											<c:when test="${board.categoryNo == 20}">운동</c:when>
-											<c:when test="${board.categoryNo == 30}">등산</c:when>
-											<c:when test="${board.categoryNo == 40}">게임</c:when>
-											<c:when test="${board.categoryNo == 50}">낚시</c:when>
-											<c:when test="${board.categoryNo == 60}">요리</c:when>
-											<c:when test="${board.categoryNo == 70}">기타</c:when>	
-										</c:choose></td>
-									<td>${board.boardTitle}</td>
-									<td>${board.memberName}</td>
-									<td>${board.count}</td>
-									<td>${board.createDate}</td>
-								</tr>
-							</c:forEach>
-						</c:otherwise>
-					</c:choose>
+					<c:forEach var="b" items="${list}">
+						<tr
+							onclick="location.href='${pageContext.request.contextPath}/detail.bo?bno=${b.boardNo}'">
+							<td>${b.boardNo}</td>
+							<td>${b.categoryName}</td>
+							<td>${b.boardTitle}</td>
+							<td>${b.memberId}</td>
+							<td>${b.count}</td>
+							<td>${b.createDate}</td>
+						</tr>
+					</c:forEach>
 				</tbody>
 			</table>
 
 			<div class="pagination">
-				<button class="btn btn-primary">< 이전</button>
-				<button class="btn btn-outline-primary">1</button>
-				<button class="btn btn-outline-primary">2</button>
-				<button class="btn btn-outline-primary">3</button>
-				<button class="btn btn-outline-primary">4</button>
-				<button class="btn btn-outline-primary">5</button>
-				<button class="btn btn-primary">다음 ></button>
+				<c:if test="${pi.currentPage > 1}">
+					<button class="btn btn-primary"
+						onclick="location.href='${pageContext.request.contextPath}/list.bo?cpage=${pi.currentPage - 1}'">
+						&lt; 이전</button>
+				</c:if>
+				
+
+				<c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
+					<c:choose>
+						<c:when test="${i == pi.currentPage}">
+							<button class="btn btn-outline-primary" disabled>${i}</button>
+						</c:when>
+						<c:otherwise>
+							<button class="btn btn-outline-primary"
+								onclick="location.href='${pageContext.request.contextPath}/list.bo?cpage=${i}'">
+								${i}</button>
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
+
+				<c:if test="${pi.currentPage < pi.maxPage}">
+					<button class="btn btn-primary"
+						onclick="location.href='${pageContext.request.contextPath}/list.bo?cpage=${pi.currentPage + 1}'">
+						다음 &gt;</button>
+				</c:if>
+				
+				
 			</div>
 		</div>
 	</div>
 </body>
-<script>
-	document
-			.querySelectorAll('.clickable')
-			.forEach(
-					function(tr) {
-						tr
-								.addEventListener(
-										'click',
-										function() {
-											var boardNo = this
-													.getAttribute('data-boardno');
-											window.location.href = '${pageContext.request.contextPath}/detail.bo?boardNo='
-													+ boardNo;
-										});
-					});
-</script>
 </html>
