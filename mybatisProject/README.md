@@ -190,6 +190,5 @@ http://localhost:8080/프로젝트명
 - Tomcat 서버를 활용한 배포 및 실행 환경 이해
 - JSP 내 JSTL / EL 사용으로 동적 페이지 구현
 - 재구현 하면서 MyBatis의 구조에 대해 익히기
-- 
-<br>
+
 <br>
